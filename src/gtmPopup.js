@@ -1,21 +1,41 @@
 import React, { useState } from "react";
-// import { useEffect } from "react";
+import { useEffect } from "react";
 import Modal from "react-modal";
 
 const GTMPopup = () => {
   const [isOpen, setIsOpen] = useState(false);
 
-//   useEffect(()=>{
-//     setIsOpen(true);
-//   },[])
-
-  const openPopup = () => {
-    setIsOpen(true);
-  };
+  useEffect(()=>{
+    let popup = JSON.parse(localStorage.getItem("Gtagaccess"))
+    if(popup && popup?.expiration > Date.now()){
+      setIsOpen(false);
+    }else{
+      localStorage.removeItem("Gtagaccess");
+      setIsOpen(true);
+    }
+  },[])
 
   const closePopup = () => {
     setIsOpen(false);
   };
+
+  const tagAllow = (durationInSeconds=10) => {
+      const expirationTimestamp = Date.now() + durationInSeconds * 1000; 
+      const data = {
+        Gtag: true,
+        expiration: expirationTimestamp,
+      };
+      localStorage.setItem("Gtagaccess", JSON.stringify(data));
+  }
+
+  const tagDecline = (durationInSeconds=10) => {
+    const expirationTimestamp = Date.now() + durationInSeconds * 1000; 
+    const data = {
+      Gtag: false,
+      expiration: expirationTimestamp,
+    };
+    localStorage.setItem("Gtagaccess", JSON.stringify(data));
+}
 
   const modalStyle = {
     content: {
@@ -52,11 +72,11 @@ const GTMPopup = () => {
 
   return (
     <div>
-      <button onClick={openPopup}>Open GTM Popup</button>
+      {/* <button onClick={openPopup}>Open GTM Popup</button> */}
 
       <Modal
         isOpen={isOpen}
-        onRequestClose={closePopup}
+        // onRequestClose={closePopup}
         contentLabel="GTM Popup"
         style={modalStyle}
       >
@@ -66,8 +86,14 @@ const GTMPopup = () => {
           improving the services we offer.
         </p>
         <div style={buttonContainerStyle}>
-        <div><button style={buttonStyle}>OK</button></div>
-        <div><button style={buttonStyle}>No, thank you</button></div>
+        <div><button style={buttonStyle} onClick={()=>{
+          closePopup()
+          tagAllow()
+        }}>OK</button></div>
+        <div><button style={buttonStyle} onClick={()=>{
+          closePopup()
+          tagDecline()
+        }}>No, thank you</button></div>
         </div>
 
         <iframe
