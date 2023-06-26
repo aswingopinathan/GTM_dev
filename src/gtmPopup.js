@@ -19,21 +19,22 @@ const GTMPopup = () => {
     setIsOpen(false);
   };
 
-  const tagAllow = (durationInSeconds=10) => {
+  const tagAllow = (durationInSeconds=3600) => {
       const expirationTimestamp = Date.now() + durationInSeconds * 1000; 
       const data = {
         Gtag: true,
         expiration: expirationTimestamp,
       };
       localStorage.setItem("Gtagaccess", JSON.stringify(data));
+      window.location.reload();
   }
 
-  const tagDecline = (durationInSeconds=10) => {
+  const tagDecline = (durationInSeconds=3600) => {
     const expirationTimestamp = Date.now() + durationInSeconds * 1000; 
     const data = {
       Gtag: false,
       expiration: expirationTimestamp,
-    };
+    };  
     localStorage.setItem("Gtagaccess", JSON.stringify(data));
 }
 
@@ -96,13 +97,13 @@ const GTMPopup = () => {
         }}>No, thank you</button></div>
         </div>
 
-        <iframe
+        {/* <iframe
           title="GTM"
           src={`https://www.googletagmanager.com/ns.html?id=${process.env.REACT_APP_GPIN}`}
           height="200"
           width="100"
           style={{ border: 0 }}
-        />
+        /> */}
       </Modal>
     </div>
   );
